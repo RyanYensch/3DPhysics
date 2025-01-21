@@ -16,7 +16,7 @@ int main() {
     GLFWwindow* window = glfwCreateWindow(WIN_WIDTH, WIN_HEIGHT, WIN_TITLE, NULL, NULL);
     if (!window) return -1;
     glfwMakeContextCurrent(window);
-
+    
 
     // Creating The Engine
     PhysicsEngine engine;
@@ -24,7 +24,7 @@ int main() {
     engine.addObject(ball);
 
     // Create Camera
-    Camera camera;
+    Camera camera(glm::vec3(0.0f, 5.0f, 15.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), 45.0f, 0.1f, 100.0f);
 
 
     // Update Loop

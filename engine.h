@@ -18,13 +18,12 @@ public:
     glm::vec3 position;
     glm::vec3 front;
     glm::vec3 up;
-    float fov;
+    float fov;          // fov (degrees)
+    float nearPlane;    // near clipping
+    float farPlane;     // far clipping
 
-    Camera()
-        : position(0.0f, 0.0f, 3.0f),
-          front(0.0f, 0.0f, -1.0f),
-          up(0.0f, 1.0f, 0.0f),
-          fov(45.0f) {}
+    Camera(glm::vec3 pos, glm::vec3 tgt, glm::vec3 upDir, float fieldOfView, float nearP, float farP)
+        : position(pos), front(tgt), up(upDir), fov(fieldOfView), nearPlane(nearP), farPlane(farP) {}
 
     glm::mat4 getViewMatrix() const {
         return glm::lookAt(position, position + front, up);
