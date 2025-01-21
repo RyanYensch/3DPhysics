@@ -1,5 +1,4 @@
 #include "engine.h"
-#include <glad/glad.h>
 
 void PhysicsEngine::addObject(const RigidBody& obj) {
     objects.push_back(obj);
@@ -14,7 +13,7 @@ void PhysicsEngine::update(float deltaTime) {
 
 void PhysicsEngine::render(const Camera& camera, int windowWidth, int windowHeight) {
     // Calculation Matricies
-    glm::mat4 projection = glm::perspective(glm::radians(camera.fov), (float)windowWidth / windowHeight, 0.1f, 100f);
+    glm::mat4 projection = glm::perspective(glm::radians(camera.fov), (float)windowWidth / windowHeight, 0.1f, 100.0f);
     glm::mat4 view = camera.getViewMatrix();
 
     //clear screen
