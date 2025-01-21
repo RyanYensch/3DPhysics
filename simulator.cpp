@@ -23,10 +23,31 @@ int main() {
     RigidBody ball = {glm::vec3(0, 10, 0), glm::vec3(0, 0, 0), glm::vec3(0, -9.81, 0), 1.0f};
     engine.addObject(ball);
 
+    // Create Camera
+    Camera camera;
+
 
     // Update Loop
     while (!glfwWindowShouldClose(window)) {
         engine.update(TICK_RATE);
+
+        // handle camera movement
+        if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+            camera.position += 0.1f * camera.front;
+        }
+        if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+            camera.position -= 0.1f * camera.front;
+        }
+        if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+            camera.position -= glm::normalize(glm::cross(camera.front, camera.up)) * 0.1f;
+        }
+        if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+            camera.position += glm::normalize(glm::cross(camera.front, camera.up)) * 0.1f;
+        }
+
+
+        // Render
+        engine.render(camera, WIN_WIDTH, WIN_HEIGHT);
 
         glfwSwapBuffers(window);
         glfwPollEvents();

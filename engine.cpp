@@ -16,8 +16,6 @@ void PhysicsEngine::render(const Camera& camera, int windowWidth, int windowHeig
     glm::mat4 projection = glm::perspective(glm::radians(camera.fov), (float)windowWidth / windowHeight, 0.1f, 100.0f);
     glm::mat4 view = camera.getViewMatrix();
 
-    //clear screen
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // render the objects
     for (const auto& obj : objects) {
