@@ -4,6 +4,7 @@
 struct RigidBody {
     glm::vec3 position;
     glm::vec3 velocity;
+    glm::vec3 acceleration;
     float mass;
 };
 
@@ -14,7 +15,10 @@ public:
     }
 
     void update(float deltaTime) {
-        
+        for (auto& obj: objects) {
+            obj.velocity += obj.acceleration * deltaTime;
+            obj.position += obj.velocity * deltaTime;
+        }
     }
 
 private:
