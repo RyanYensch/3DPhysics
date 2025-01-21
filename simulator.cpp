@@ -27,6 +27,9 @@ int main() {
 
     // Main update loop
     while (!glfwWindowShouldClose(window)) {
+        //update objects
+        engine.update(TICK_RATE);
+
         // Handle camera movement
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
             camera.position += camera.speed * camera.front;  // Move camera forward
