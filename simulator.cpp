@@ -11,11 +11,18 @@
 #define TICK_RATE  0.016f
 
 int main() {
-    // Initialising the window
+    // Initialize GLFW
     if (!glfwInit()) return -1;
     GLFWwindow* window = glfwCreateWindow(WIN_WIDTH, WIN_HEIGHT, WIN_TITLE, NULL, NULL);
     if (!window) return -1;
     glfwMakeContextCurrent(window);
+    glEnable(GL_DEPTH_TEST); // Enable depth testing
+    
+    // Enable V-Sync
+    glfwSwapInterval(1);
+
+    // Setting up viewport
+    glViewport(0, 0, WIN_WIDTH, WIN_HEIGHT);
     
 
     // Creating The Engine
@@ -32,17 +39,18 @@ int main() {
         engine.update(TICK_RATE);
 
         // handle camera movement
+        float moveSpeed = 0.1f;
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-            camera.position += 0.1f * camera.front;
+            camera.position += moveSpeed * camera.front;
         }
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-            camera.position -= 0.1f * camera.front;
+            camera.position -= moveSpeed * camera.front;
         }
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-            camera.position -= glm::normalize(glm::cross(camera.front, camera.up)) * 0.1f;
+            camera.position -= glm::normalize(glm::cross(camera.front, camera.up)) * moveSpeed;
         }
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-            camera.position += glm::normalize(glm::cross(camera.front, camera.up)) * 0.1f;
+            camera.position += glm::normalize(glm::cross(camera.front, camera.up)) * moveSpeed;
         }
 
 

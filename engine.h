@@ -18,9 +18,9 @@ public:
     glm::vec3 position;
     glm::vec3 front;
     glm::vec3 up;
-    float fov;          // fov (degrees)
-    float nearPlane;    // near clipping
-    float farPlane;     // far clipping
+    float fov;
+    float nearPlane;
+    float farPlane;
 
     Camera(glm::vec3 pos, glm::vec3 tgt, glm::vec3 upDir, float fieldOfView, float nearP, float farP)
         : position(pos), front(tgt), up(upDir), fov(fieldOfView), nearPlane(nearP), farPlane(farP) {}
@@ -39,6 +39,5 @@ public:
 private:
     std::vector<RigidBody> objects;
 };
-
 
 #endif // ENGINE_H

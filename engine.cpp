@@ -18,7 +18,7 @@ void PhysicsEngine::update(float deltaTime) {
 void PhysicsEngine::render(const Camera& camera, int windowWidth, int windowHeight) {
     // Clear Screen
     glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // enable depth
     glEnable(GL_DEPTH_TEST);
