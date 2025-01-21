@@ -4,6 +4,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <vector>
+#include <GLFW/glfw3.h>
 
 struct RigidBody {
     glm::vec3 position;
@@ -33,6 +34,7 @@ class PhysicsEngine {
 public:
     void addObject(const RigidBody& obj);
     void update(float deltaTime);
+    void render(const Camera& camera, int windowWidth, int windowHeight);
 
 private:
     std::vector<RigidBody> objects;
