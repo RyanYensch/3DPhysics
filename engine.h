@@ -21,9 +21,10 @@ public:
     float fov;
     float nearPlane;
     float farPlane;
+    float speed;
 
-    Camera(glm::vec3 pos, glm::vec3 tgt, glm::vec3 upDir, float fieldOfView, float nearP, float farP)
-        : position(pos), front(tgt), up(upDir), fov(fieldOfView), nearPlane(nearP), farPlane(farP) {}
+    Camera(glm::vec3 pos, glm::vec3 tgt, glm::vec3 upDir, float fieldOfView, float nearP, float farP, float spd)
+        : position(pos), front(tgt), up(upDir), fov(fieldOfView), nearPlane(nearP), farPlane(farP), speed(spd) {}
 
     glm::mat4 getViewMatrix() const {
         return glm::lookAt(position, position + front, up);

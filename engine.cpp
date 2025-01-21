@@ -15,29 +15,35 @@ void PhysicsEngine::update(float deltaTime) {
 }
 
 void PhysicsEngine::render(const Camera& camera, int windowWidth, int windowHeight) {
-    // Clear Screen with a dark gray color
-    glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+    // Clear the screen
+    glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     // Enable depth testing
     glEnable(GL_DEPTH_TEST);
 
-    // Set up the projection matrix (field of view, aspect ratio, near/far planes)
+    // Set up the projection and view
     glm::mat4 projection = glm::perspective(glm::radians(camera.fov), (float)windowWidth / windowHeight, camera.nearPlane, camera.farPlane);
-
-    // View matrix (camera's position and orientation)
     glm::mat4 view = camera.getViewMatrix();
 
-    // Render all objects
+    // Combine the projection and view matrices
+    glm::mat4 projectionView = projection * view;
+
+    // Render each object
     for (const auto& obj : objects) {
-        // Model matrix (object's position, rotation, scale)
+        // Create the model matrix to translate the object to its correct position
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::translate(model, obj.position); // Translate the cube to its position
+        model = glm::translate(model, obj.position);
 
-        // MVP matrix (Model-View-Projection)
-        glm::mat4 mvp = projection * view * model;
+        // Combine the model, view, and projection matrices
+        glm::mat4 mvp = projectionView * model;
 
+        // Load the model-view-projection matrix into OpenGL
+        glLoadMatrixf(glm::value_ptr(mvp));
+
+        // Draw the cube
         glBegin(GL_QUADS);
+
         // Front face (red)
         glColor3f(1.0f, 0.0f, 0.0f);
         glVertex3f(-0.5f, -0.5f,  0.5f);
@@ -65,6 +71,8 @@ void PhysicsEngine::render(const Camera& camera, int windowWidth, int windowHeig
         glVertex3f( 0.5f, -0.5f,  0.5f);
         glVertex3f( 0.5f,  0.5f,  0.5f);
         glVertex3f( 0.5f,  0.5f, -0.5f);
+
         glEnd();
     }
 }
+

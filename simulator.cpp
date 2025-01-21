@@ -19,39 +19,45 @@ int main() {
 
     // Create the engine and add a rigid body (the cube)
     PhysicsEngine engine;
-    RigidBody cube = {glm::vec3(0.0f, 0.0f, -3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -9.81f, 0.0f), 1.0f};
+    RigidBody cube = {glm::vec3(0.0f, 0.0f, -3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -0.1f, 0.0f), 1.0f};
     engine.addObject(cube);
 
-    // Create Camera (Positioned in a way to view the cube)
-    Camera camera(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), 45.0f, 0.1f, 100.0f);
+    // Create Camera (Positioned initially to view the cube)
+    Camera camera(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), 45.0f, 0.1f, 100.0f, 0.1f);
 
     // Main update loop
     while (!glfwWindowShouldClose(window)) {
-        // Update physics engine (cube's motion)
-        engine.update(TICK_RATE);
-
         // Handle camera movement
-        float moveSpeed = 0.1f;
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-            camera.position += moveSpeed * camera.front;
+            camera.position += camera.speed * camera.front;  // Move camera forward
         }
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-            camera.position -= moveSpeed * camera.front;
+            camera.position -= camera.speed * camera.front;  // Move camera backward
         }
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-            camera.position -= glm::normalize(glm::cross(camera.front, camera.up)) * moveSpeed;
+            camera.position -= glm::normalize(glm::cross(camera.front, camera.up)) * camera.speed; // Move camera left
         }
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-            camera.position += glm::normalize(glm::cross(camera.front, camera.up)) * moveSpeed;
+            camera.position += glm::normalize(glm::cross(camera.front, camera.up)) * camera.speed; // Move camera right
+        }
+        if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+            camera.position.y += camera.speed; // Move camera up
+        }
+        if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+            camera.position.y -= camera.speed; // Move camera down
         }
 
-        // Render the scene
+        // Update the view matrix after the camera position change
+        glm::mat4 view = camera.getViewMatrix();
+
+        // Render the scene (cube will stay still, only the camera moves)
         engine.render(camera, WIN_WIDTH, WIN_HEIGHT);
 
         // Swap buffers and poll events
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
+
 
     glfwTerminate();
     return 0;
