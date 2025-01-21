@@ -7,7 +7,7 @@
 #define WIN_HEIGHT 600
 #define WIN_TITLE "3D Engine"
 #define FPS 60
-#define TICK_RATE  1f / FPS
+#define TICK_RATE  0.016f
 
 int main() {
     // Initialising the window
@@ -17,9 +17,18 @@ int main() {
     glfwMakeContextCurrent(window);
 
 
+    // Creating The Engine
+    PhysicsEngine engine;
+    RigidBody ball = {glm::vec3(0, 10, 0), glm::vec3(0, 0, 0), glm::vec3(0, -9.81, 0), 1.0f};
+    engine.addObject(ball);
+
 
     // Update Loop
     while (!glfwWindowShouldClose(window)) {
+        engine.update(TICK_RATE);
+
+        glfwSwapBuffers(window);
+        glfwPollEvents();
     }
 
 
