@@ -6,3 +6,17 @@ struct RigidBody {
     glm::vec3 velocity;
     float mass;
 };
+
+class PhysicsEngine {
+public:
+    void addObject(const RigidBody& obj) {
+        objects.push_back(obj);
+    }
+
+    void update(float deltaTime) {
+        
+    }
+
+private:
+    std::vector<RigidBody> objects;
+};
