@@ -33,3 +33,27 @@ void Camera::updateCameraVectors() {
     right = glm::normalize(glm::cross(front, worldup));
     up = glm::normalize(glm::cross(right, front));
 }
+
+void Camera::moveForward(float deltaTime) {
+    position += deltaTime * speed * front;
+}
+
+void Camera::moveBackward(float deltaTime) {
+    position -= deltaTime * speed * front;
+}
+
+void Camera::moveLeft(float deltaTime) {
+    position -= glm::normalize(glm::cross(front, up)) * speed * deltaTime;
+}
+
+void Camera::moveRight(float deltaTime) {
+    position += glm::normalize(glm::cross(front, up)) * speed * deltaTime;
+}
+
+void Camera::moveUp(float deltaTime) {
+    position.y += deltaTime * speed;
+}
+
+void Camera::moveDown(float deltaTime) {
+    position.y -= deltaTime * speed;
+}

@@ -38,6 +38,12 @@ public:
 
     void changefov(double y);
     void rotateCamera(float xoffset, float yoffset);
+    void moveForward(float deltaTime);
+    void moveBackward(float deltaTime);
+    void moveLeft(float deltaTime);
+    void moveRight(float deltaTime);
+    void moveUp(float deltaTime);
+    void moveDown(float deltaTime);
 
 private:
     void updateCameraVectors();

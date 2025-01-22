@@ -8,8 +8,6 @@
 #define WIN_WIDTH 1080
 #define WIN_HEIGHT 720
 #define WIN_TITLE "3D Engine"
-#define FPS 60
-#define TICK_RATE 0.016f // 60 FPS
 
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
     Camera* cameraInstance = static_cast<Camera*>(glfwGetWindowUserPointer(window));
@@ -51,7 +49,7 @@ int main() {
     engine.addObject(cube);
 
     // Create Camera (Positioned initially to view the cube)
-    Camera camera(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), 60.0f, 0.1f, 100.0f, 0.1f, 0.01f);
+    Camera camera(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), 60.0f, 0.1f, 100.0f, 1.5f, 0.1f);
 
 
     // scrollwheel actions for fov
@@ -61,33 +59,42 @@ int main() {
     // mouse actions for rotation
     glfwSetCursorPosCallback(window, mouse_callback);
 
+    // The timing rates of the function
+    float prevTime = 0.0f;
+    float deltaTime = 0.0f;
+
     // Main update loop
     while (!glfwWindowShouldClose(window)) {
         //update objects
-        engine.update(TICK_RATE);
+        double currTime = glfwGetTime();
+        deltaTime = currTime - prevTime;
+        prevTime = currTime;
+        engine.update(deltaTime);
 
         // Handle camera movement
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-            camera.position += camera.speed * camera.front;  // Move camera forward
+            camera.moveForward(deltaTime);
         }
         if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-            camera.position -= camera.speed * camera.front;  // Move camera backward
+            camera.moveBackward(deltaTime);
         }
         if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-            camera.position -= glm::normalize(glm::cross(camera.front, camera.up)) * camera.speed; // Move camera left
+            camera.moveLeft(deltaTime);
         }
         if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-            camera.position += glm::normalize(glm::cross(camera.front, camera.up)) * camera.speed; // Move camera right
+            camera.moveRight(deltaTime);
         }
         if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-            camera.position.y += camera.speed; // Move camera up
+            camera.moveUp(deltaTime);
         }
         if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
-            camera.position.y -= camera.speed; // Move camera down
+            camera.moveDown(deltaTime);
         }
 
-        // Render the scene (cube will stay still, only the camera moves)
-        engine.render(camera, WIN_WIDTH, WIN_HEIGHT);
+        // Render the scene (objects will stay still, only the camera moves)
+        int width, height;
+        glfwGetFramebufferSize(window, &width, &height);
+        engine.render(camera, width, height);
 
         // Swap buffers and poll events
         glfwSwapBuffers(window);
