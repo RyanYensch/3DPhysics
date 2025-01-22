@@ -11,6 +11,12 @@
 #define FPS 60
 #define TICK_RATE 0.016f // 60 FPS
 
+void scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
+    Camera* cameraInstance = static_cast<Camera*>(glfwGetWindowUserPointer(window));
+    cameraInstance->changefov(yoffset);
+}
+
+
 int main() {
     // Initialize GLFW
     if (!glfwInit()) return -1;
@@ -21,11 +27,16 @@ int main() {
 
     // Create the engine and add a rigid body (the cube)
     PhysicsEngine engine;
-    RigidBody cube = {glm::vec3(0.0f, 0.0f, -3.0f), glm::vec3(0.1f, 0.5f, 0.1f), glm::vec3(0.0f, -0.1f, 0.0f), glm::vec3(1.0f,3.0f,2.0f), ShapeType::Cuboid, glm::vec3(1.0f, 0.0f, 1.0f), 1.0f};
+    RigidBody cube = {glm::vec3(0.0f, 0.0f, -3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,3.0f,2.0f), ShapeType::Cuboid, glm::vec3(1.0f, 0.0f, 1.0f), 1.0f};
     engine.addObject(cube);
 
     // Create Camera (Positioned initially to view the cube)
     Camera camera(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), 60.0f, 0.1f, 100.0f, 0.1f);
+
+
+    // scrollwheel actions for fov
+    glfwSetWindowUserPointer(window, &camera);
+    glfwSetScrollCallback(window, scroll_callback);
 
     // Main update loop
     while (!glfwWindowShouldClose(window)) {

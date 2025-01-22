@@ -23,6 +23,8 @@ public:
     glm::mat4 getViewMatrix() const {
         return glm::lookAt(position, position + front, up);
     }
+
+    void changefov(double y);
 };
 
 
