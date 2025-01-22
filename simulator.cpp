@@ -35,12 +35,17 @@ void mouse_callback(GLFWwindow *window, double xpos, double ypos) {
     cameraInstance->rotateCamera(xOffset * cameraInstance->sensitivity, yOffset * cameraInstance->sensitivity);
 }
 
+void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
+    glViewport(0, 0, width, height);
+}
+
 int main() {
     // Initialize GLFW
     if (!glfwInit()) return -1;
     GLFWwindow* window = glfwCreateWindow(WIN_WIDTH, WIN_HEIGHT, WIN_TITLE, NULL, NULL);
     if (!window) return -1;
     glfwMakeContextCurrent(window);
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);  
     glEnable(GL_DEPTH_TEST); // Enable depth testing
 
     // Create the engine and add a rigid body (the cube)
