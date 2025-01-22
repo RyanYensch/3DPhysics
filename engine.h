@@ -5,13 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <vector>
 #include <GLFW/glfw3.h>
-
-struct RigidBody {
-    glm::vec3 position;
-    glm::vec3 velocity;
-    glm::vec3 acceleration;
-    float mass;
-};
+#include "objects.h"
 
 class Camera {
 public:

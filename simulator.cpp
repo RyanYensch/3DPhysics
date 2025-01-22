@@ -19,11 +19,11 @@ int main() {
 
     // Create the engine and add a rigid body (the cube)
     PhysicsEngine engine;
-    RigidBody cube = {glm::vec3(0.0f, 0.0f, -3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -0.1f, 0.0f), 1.0f};
+    RigidBody cube = {glm::vec3(0.0f, 0.0f, -3.0f), glm::vec3(0.1f, 0.5f, 0.1f), glm::vec3(0.0f, -0.1f, 0.0f), 1.0f, 1.0f};
     engine.addObject(cube);
 
     // Create Camera (Positioned initially to view the cube)
-    Camera camera(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), 45.0f, 0.1f, 100.0f, 0.1f);
+    Camera camera(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), 60.0f, 0.1f, 100.0f, 0.1f);
 
     // Main update loop
     while (!glfwWindowShouldClose(window)) {
@@ -49,9 +49,6 @@ int main() {
         if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
             camera.position.y -= camera.speed; // Move camera down
         }
-
-        // Update the view matrix after the camera position change
-        glm::mat4 view = camera.getViewMatrix();
 
         // Render the scene (cube will stay still, only the camera moves)
         engine.render(camera, WIN_WIDTH, WIN_HEIGHT);
