@@ -32,6 +32,7 @@ void mouse_callback(GLFWwindow *window, double xpos, double ypos) {
     cameraInstance->lastX = xpos;
     cameraInstance->lastY = ypos;
 
+
     cameraInstance->rotateCamera(xOffset * cameraInstance->sensitivity, yOffset * cameraInstance->sensitivity);
 }
 
@@ -45,12 +46,11 @@ int main() {
     GLFWwindow* window = glfwCreateWindow(WIN_WIDTH, WIN_HEIGHT, WIN_TITLE, NULL, NULL);
     if (!window) return -1;
     glfwMakeContextCurrent(window);
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);  
     glEnable(GL_DEPTH_TEST); // Enable depth testing
 
     // Create the engine and add a rigid body (the cube)
     PhysicsEngine engine;
-    RigidBody cube = {glm::vec3(0.0f, 0.0f, -3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,3.0f,2.0f), ShapeType::Cuboid, glm::vec3(1.0f, 0.0f, 1.0f), 1.0f};
+    RigidBody cube = {glm::vec3(0.0f, 0.0f, -3.0f), glm::vec3(1.0f, 3.0f, 1.0f), glm::vec3(0.0f, -9.81f, 0.0f), glm::vec3(1.0f,3.0f,2.0f), ShapeType::Cuboid, glm::vec3(1.0f, 0.0f, 1.0f), 1.0f};
     engine.addObject(cube);
 
     // Create Camera (Positioned initially to view the cube)
@@ -63,6 +63,9 @@ int main() {
 
     // mouse actions for rotation
     glfwSetCursorPosCallback(window, mouse_callback);
+
+    // update for when screen size changes
+    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     // The timing rates of the function
     float prevTime = 0.0f;
@@ -94,6 +97,10 @@ int main() {
         }
         if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
             camera.moveDown(deltaTime);
+        }
+
+        if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
+            engine.addObject(cube);
         }
 
         // Render the scene (objects will stay still, only the camera moves)

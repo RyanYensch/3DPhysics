@@ -15,7 +15,7 @@ void Camera::rotateCamera(float xoffset, float yoffset) {
     yaw += xoffset;
     pitch += yoffset;
 
-    // So that you dont look do a backflip
+    // So that you dont do a backflip
     if (pitch > 89.0f) pitch = 89.0f;
     else if (pitch < -89.0f) pitch = -89.0f;
 
