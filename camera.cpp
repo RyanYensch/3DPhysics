@@ -5,9 +5,19 @@
 #include "camera.h"
 
 void Camera::changefov(double y) {
-    if (y > 0 && fov > 1) {
-        fov--;
-    } else if (y < 0 && fov < 120) {
-        fov++;
-    }
+    fov -= y;
+    if (fov < 1) fov = 1;
+    else if (fov > 120) fov = 120;
+}
+
+
+void Camera::rotateCamera(float xoffset, float yoffset) {
+    yaw += xoffset;
+    pitch += yoffset;
+
+    // So that you dont look do a backflip
+    if (pitch > 89.0f) pitch = 89.0f;
+    else if (pitch < -89.0f) pitch = -89.0f;
+
+    updateCameraVectors();
 }
