@@ -30,19 +30,8 @@ public:
 private:
     std::vector<glm::vec3> verticies;
 
-    void initShape() {
-        switch(shape) {
-            case ShapeType::Cuboid:
-                initCuboid();
-                break;
-            default:
-                break;
-        }
-    }
-
-    void initCuboid() {
-        
-    }
+    void initShape();
+    void initCuboid();
 };
 
 
