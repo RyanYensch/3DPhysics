@@ -19,6 +19,7 @@ public:
     glm::vec3 scale;
     ShapeType shape;
     float mass;
+    std::vector<glm::vec3> verticies;
 
 
     RigidBody(glm::vec3 pos, glm::vec3 vel, glm::vec3 acc, glm::vec3 size, ShapeType shp, float m)
@@ -28,8 +29,6 @@ public:
 
 
 private:
-    std::vector<glm::vec3> verticies;
-
     void initShape();
     void initCuboid();
 };
