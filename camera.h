@@ -25,7 +25,7 @@ public:
     float sensitivity;
     float lastX = WIN_WIDTH / 2.0f;
     float lastY = WIN_HEIGHT / 2.0f;
-    bool firstMouse = false;
+    bool firstMouse = true;
 
     Camera(glm::vec3 pos, glm::vec3 tgt, glm::vec3 upDir, float fieldOfView, float nearP, float farP, float spd, float sens)
         : position(pos), front(tgt), up(upDir), worldup(upDir), fov(fieldOfView), nearPlane(nearP), farPlane(farP), speed(spd), yaw(-90.0f), pitch(0.0f), sensitivity(sens) {
