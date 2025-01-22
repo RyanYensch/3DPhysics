@@ -44,33 +44,11 @@ void PhysicsEngine::render(const Camera& camera, int windowWidth, int windowHeig
         // Draw the cube
         glBegin(GL_QUADS);
 
-        // Front face (red)
-        glColor3f(1.0f, 0.0f, 0.0f);
-        glVertex3f(-0.5f, -0.5f,  0.5f);
-        glVertex3f( 0.5f, -0.5f,  0.5f);
-        glVertex3f( 0.5f,  0.5f,  0.5f);
-        glVertex3f(-0.5f,  0.5f,  0.5f);
+        glColor3f(obj.colour[0], obj.colour[1], obj.colour[2]);
 
-        // Back face (green)
-        glColor3f(0.0f, 1.0f, 0.0f);
-        glVertex3f(-0.5f, -0.5f, -0.5f);
-        glVertex3f( 0.5f, -0.5f, -0.5f);
-        glVertex3f( 0.5f,  0.5f, -0.5f);
-        glVertex3f(-0.5f,  0.5f, -0.5f);
-
-        // Left face (blue)
-        glColor3f(0.0f, 0.0f, 1.0f);
-        glVertex3f(-0.5f, -0.5f, -0.5f);
-        glVertex3f(-0.5f, -0.5f,  0.5f);
-        glVertex3f(-0.5f,  0.5f,  0.5f);
-        glVertex3f(-0.5f,  0.5f, -0.5f);
-
-        // Right face (yellow)
-        glColor3f(1.0f, 1.0f, 0.0f);
-        glVertex3f( 0.5f, -0.5f, -0.5f);
-        glVertex3f( 0.5f, -0.5f,  0.5f);
-        glVertex3f( 0.5f,  0.5f,  0.5f);
-        glVertex3f( 0.5f,  0.5f, -0.5f);
+        for (const auto& v : obj.verticies) {
+            glVertex3f(v.x,v.y,v.z);
+        }
 
         glEnd();
     }

@@ -2,9 +2,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <GLFW/glfw3.h>
 #include "engine.h"
+#include "objects.h"
+#include "camera.h"
 
-#define WIN_WIDTH 800
-#define WIN_HEIGHT 600
+#define WIN_WIDTH 1080
+#define WIN_HEIGHT 720
 #define WIN_TITLE "3D Engine"
 #define FPS 60
 #define TICK_RATE 0.016f // 60 FPS
@@ -19,7 +21,7 @@ int main() {
 
     // Create the engine and add a rigid body (the cube)
     PhysicsEngine engine;
-    RigidBody cube = {glm::vec3(0.0f, 0.0f, -3.0f), glm::vec3(0.1f, 0.5f, 0.1f), glm::vec3(0.0f, -0.1f, 0.0f), 1.0f, 1.0f};
+    RigidBody cube = {glm::vec3(0.0f, 0.0f, -3.0f), glm::vec3(0.1f, 0.5f, 0.1f), glm::vec3(0.0f, -0.1f, 0.0f), glm::vec3(1.0f,3.0f,2.0f), ShapeType::Cuboid, glm::vec3(1.0f, 0.0f, 1.0f), 1.0f};
     engine.addObject(cube);
 
     // Create Camera (Positioned initially to view the cube)

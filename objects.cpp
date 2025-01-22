@@ -24,8 +24,8 @@ void RigidBody::initCuboid() {
                 vertex[axis] = sign * scale[axis] * 0.5f;
 
                 // other 2 verticies
-                vertex[(axis + 1) % 3] = ((i & 1) ? 1 : -1) * scale[(axis + 1) % 3] * 0.5f;     // positive if the number is 1 or 3 otherwise negative
-                vertex[(axis + 2) % 3] = ((i & 2) ? 1 : -1) * scale[(axis + 2) % 3] * 0.5f;     // positive if the number is 2 or 3 otherwise negative
+                vertex[(axis + 1) % 3] = ((i == 0 || i == 3) ? -1.0f : 1.0f) * scale[(axis + 1) % 3] * 0.5f;
+                vertex[(axis + 2) % 3] = ((i == 0 || i == 1) ? -1.0f : 1.0f) * scale[(axis + 2) % 3] * 0.5f;
 
                 verticies.push_back(vertex);
             }

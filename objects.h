@@ -18,12 +18,13 @@ public:
     glm::vec3 acceleration;
     glm::vec3 scale;
     ShapeType shape;
-    float mass;
     std::vector<glm::vec3> verticies;
+    glm::vec<3, GLfloat> colour;
+    float mass;
 
 
-    RigidBody(glm::vec3 pos, glm::vec3 vel, glm::vec3 acc, glm::vec3 size, ShapeType shp, float m)
-        : position(pos), velocity(vel), acceleration(acc), mass(m), scale(size), shape(shp) {
+    RigidBody(glm::vec3 pos, glm::vec3 vel, glm::vec3 acc, glm::vec3 size, ShapeType shp, glm::vec<3, GLfloat> col, float m)
+        : position(pos), velocity(vel), acceleration(acc), mass(m), scale(size), shape(shp), colour(col) {
             initShape();
         }
 
