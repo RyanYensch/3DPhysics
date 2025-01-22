@@ -13,9 +13,29 @@
 
 void scroll_callback(GLFWwindow *window, double xoffset, double yoffset) {
     Camera* cameraInstance = static_cast<Camera*>(glfwGetWindowUserPointer(window));
+    if (!cameraInstance) return;
+
     cameraInstance->changefov(yoffset);
 }
 
+void mouse_callback(GLFWwindow *window, double xpos, double ypos) {
+    Camera* cameraInstance = static_cast<Camera*>(glfwGetWindowUserPointer(window));
+    if (!cameraInstance) return;
+
+    if (cameraInstance->firstMouse) {
+        cameraInstance->lastX = xpos;
+        cameraInstance->lastY = ypos;
+        cameraInstance->firstMouse = false;
+    }
+
+    // get the change in (x,y)
+    float xOffset = xpos - cameraInstance->lastX;
+    float yOffset = cameraInstance->lastY - ypos; // y is inverse
+    cameraInstance->lastX = xpos;
+    cameraInstance->lastY = ypos;
+
+    cameraInstance->rotateCamera(xOffset * cameraInstance->sensitivity, yOffset * cameraInstance->sensitivity);
+}
 
 int main() {
     // Initialize GLFW
@@ -31,12 +51,15 @@ int main() {
     engine.addObject(cube);
 
     // Create Camera (Positioned initially to view the cube)
-    Camera camera(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), 60.0f, 0.1f, 100.0f, 0.1f);
+    Camera camera(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), 60.0f, 0.1f, 100.0f, 0.1f, 0.01f);
 
 
     // scrollwheel actions for fov
     glfwSetWindowUserPointer(window, &camera);
     glfwSetScrollCallback(window, scroll_callback);
+
+    // mouse actions for rotation
+    glfwSetCursorPosCallback(window, mouse_callback);
 
     // Main update loop
     while (!glfwWindowShouldClose(window)) {
