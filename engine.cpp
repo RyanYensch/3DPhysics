@@ -10,6 +10,7 @@ void PhysicsEngine::addObject(const RigidBody& obj) {
 void PhysicsEngine::update(float deltaTime) {
     for (auto& obj : objects) {
         obj.velocity += obj.acceleration * deltaTime;
+        obj.velocity.y -= gravity * deltaTime;
         obj.position += obj.velocity * deltaTime;
     }
 }

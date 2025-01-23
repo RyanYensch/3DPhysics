@@ -11,12 +11,15 @@
 
 class PhysicsEngine {
 public:
+    PhysicsEngine (float grav = 9.81) : gravity(grav) {}
+
     void addObject(const RigidBody& obj);
     void update(float deltaTime);
     void render(const Camera& camera, int windowWidth, int windowHeight);
 
 private:
     std::vector<RigidBody> objects;
+    float gravity;
 };
 
 #endif // ENGINE_H
