@@ -5,6 +5,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <vector>
 #include <GLFW/glfw3.h>
+#include <utility>
 
 enum class ShapeType { 
     Cuboid,
@@ -42,11 +43,17 @@ public:
 
 
 
-class Body : public ShapeBase {
+class SimpleBody : public ShapeBase {
 public:
     glm::vec3 position;
     glm::vec3 scale;
     ShapeType shape;
+    glm::vec<3, GLfloat> colour;
+
+    SimpleBody(glm::vec3 pos, glm::vec3 size, ShapeType shp, glm::vec<3, GLfloat> col)
+        : position(pos), scale(size), shape(shp), colour(col) {
+            initShape(shape, scale);
+        }
 };
 
 

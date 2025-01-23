@@ -50,8 +50,8 @@ int main() {
 
     // Create the engine and add a rigid body (the cube)
     PhysicsEngine engine;
-    RigidBody cube = {glm::vec3(0.0f, 0.0f, -3.0f), glm::vec3(1.0f, 3.0f, 1.0f), glm::vec3(0.0f, -9.81f, 0.0f), glm::vec3(1.0f,3.0f,2.0f), ShapeType::Cuboid, glm::vec3(1.0f, 0.0f, 1.0f), 1.0f};
-    engine.addObject(cube);
+    RigidBody cube = {glm::vec3(0.0f, 0.0f, -3.0f), glm::vec3(1.0f, 3.0f, 1.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,3.0f,2.0f), ShapeType::Cuboid, glm::vec3(1.0f, 0.0f, 1.0f), 1.0f};
+    engine.addRigidObject(cube);
 
     // Create Camera (Positioned initially to view the cube)
     Camera camera(glm::vec3(0.0f, 0.0f, 5.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f), 60.0f, 0.1f, 100.0f, 1.5f, 0.1f);
@@ -100,7 +100,7 @@ int main() {
         }
 
         if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
-            engine.addObject(cube);
+            engine.addRigidObject(cube);
         }
 
         // Render the scene (objects will stay still, only the camera moves)

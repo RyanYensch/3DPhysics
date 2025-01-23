@@ -13,13 +13,18 @@ class PhysicsEngine {
 public:
     PhysicsEngine (float grav = 9.81) : gravity(grav) {}
 
-    void addObject(const RigidBody& obj);
+    void addRigidObject(const RigidBody& obj);
+    void addSimpleObject(const SimpleBody& obj);
     void update(float deltaTime);
     void render(const Camera& camera, int windowWidth, int windowHeight);
 
 private:
-    std::vector<RigidBody> objects;
+    std::vector<RigidBody> rigidObjects;
+    std::vector<SimpleBody> simpleObjects;
     float gravity;
+
+    template <typename T>
+    void renderObjects(const std::vector<T>& objects, glm::mat4 projectionView);
 };
 
 #endif // ENGINE_H
