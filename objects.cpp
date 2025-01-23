@@ -4,17 +4,17 @@
 #include <GLFW/glfw3.h>
 #include "objects.h"
 
-void RigidBody::initShape() {
+void ShapeBase::initShape(ShapeType shape, glm::vec3& scale) {
     switch(shape) {
         case ShapeType::Cuboid:
-            initCuboid();
+            ShapeBase::initCuboid(scale);
             break;
         default:
             break;
     }
 }
 
-void RigidBody::initCuboid() {
+void ShapeBase::initCuboid(glm::vec3& scale) {
     for (int axis = 0; axis < 3; axis++) {
         for (const int sign : {-1, 1}) {
             for (int i = 0; i < 4; i++) {
