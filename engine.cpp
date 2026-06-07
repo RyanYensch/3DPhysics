@@ -117,7 +117,7 @@ void PhysicsEngine::update(float deltaTime) {
 
                     // Cofficient of restitution
                     // 0.0f stops, 1.0f super bouncy
-                    float e = 0.5f;
+                    float e = (std::abs(velAlongNorm) < 0.2f) ? 0.0f : 0.5f;
 
                     // inverse mass
                     float invMassA = (objA.mass > 0.0f) ? 1.0f / objA.mass : 0.0f;
@@ -149,9 +149,65 @@ void PhysicsEngine::update(float deltaTime) {
 
                     if (objA.mass > 0.0f) objA.position += correction * invMassA;
                     if (objB.mass > 0.0f) objB.position -= correction * invMassB;
+                }
+            }
 
-                    // Only resolve one corner per frame
-                    break;
+            // Check if B's Corners are in A
+            for (const auto& localVertB : objB.verticies) {
+                glm::vec3 worldVertB = objB.position + (objB.orientation * (localVertB * objB.scale));
+                glm::vec3 vertInA = glm::inverse(objA.orientation) * (worldVertB - objA.position);
+                glm::vec3 halfA = objA.scale / 2.0f;
+
+                if (std::abs(vertInA.x) < halfA.x && std::abs(vertInA.y) < halfA.y && std::abs(vertInA.z) < halfA.z) {
+                    float overlapX = halfA.x - std::abs(vertInA.x);
+                    float overlapY = halfA.y - std::abs(vertInA.y);
+                    float overlapZ = halfA.z - std::abs(vertInA.z);
+
+                    glm::vec3 localNorm(0.0f);
+                    float minOverlap = std::min({overlapX, overlapY, overlapZ});
+                    if (minOverlap == overlapX) localNorm = glm::vec3(vertInA.x > 0 ? 1.0f : -1.0f, 0.0f, 0.0f);
+                    else if (minOverlap == overlapY) localNorm = glm::vec3(0.0f, vertInA.y > 0 ? 1.0f : -1.0f, 0.0f);
+                    else localNorm = glm::vec3(0.0f, 0.0f, vertInA.z > 0 ? 1.0f : -1.0f);
+
+                    glm::vec3 worldNorm = -(objA.orientation * localNorm);
+
+
+                    glm::vec3 rA = worldVertB - objA.position;
+                    glm::vec3 rB = worldVertB - objB.position;
+
+                    glm::vec3 vA = objA.velocity + glm::cross(objA.angularVelocity, rA);
+                    glm::vec3 vB = objB.velocity + glm::cross(objB.angularVelocity, rB);
+                    glm::vec3 relVel = vA - vB;
+
+                    float velAlongNorm = glm::dot(relVel, worldNorm);
+                    if (velAlongNorm > 0.0f) continue; 
+
+                    float e = (std::abs(velAlongNorm) < 0.2f) ? 0.0f : 0.5f;
+
+                    float invMassA = (objA.mass > 0.0f) ? 1.0f / objA.mass : 0.0f;
+                    float invMassB = (objB.mass > 0.0f) ? 1.0f / objB.mass : 0.0f;
+
+                    glm::vec3 angularFactA = glm::cross(invInteriaWorldA * glm::cross(rA, worldNorm), rA);
+                    glm::vec3 angularFactB = glm::cross(invInteriaWorldB * glm::cross(rB, worldNorm), rB);
+                    float angularEffect = glm::dot(angularFactA + angularFactB, worldNorm);
+
+                    float j = -(1.0f + e) * velAlongNorm;
+                    j /= (invMassA + invMassB + angularEffect);
+
+                    glm::vec3 impulse = j * worldNorm;
+
+                    if (objA.mass > 0.0f) objA.velocity += impulse * invMassA;
+                    if (objB.mass > 0.0f) objB.velocity -= impulse * invMassB;
+
+                    if (objA.mass > 0.0f) objA.angularVelocity += invInteriaWorldA * glm::cross(rA, impulse);
+                    if (objB.mass > 0.0f) objB.angularVelocity -= invInteriaWorldB * glm::cross(rB, impulse);
+
+                    const float percent = 0.8f; 
+                    const float slop = 0.01f; 
+                    glm::vec3 correction = (std::max(minOverlap - slop, 0.0f) / (invMassA + invMassB)) * percent * worldNorm;
+
+                    if (objA.mass > 0.0f) objA.position += correction * invMassA;
+                    if (objB.mass > 0.0f) objB.position -= correction * invMassB;
                 }
             }
         }
