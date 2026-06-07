@@ -2,6 +2,8 @@
 #include <GLFW/glfw3.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <algorithm>
+#include <cmath>
 
 void PhysicsEngine::addRigidObject(const RigidBody& obj) {
     rigidObjects.push_back(obj);
@@ -12,34 +14,78 @@ void PhysicsEngine::addSimpleObject(const SimpleBody& obj) {
 }
 
 void PhysicsEngine::update(float deltaTime) {
-    for (size_t i{0}; i < rigidObjects.size(); ++i) {
-        auto& obj = rigidObjects[i];
-
+    for (auto& obj : rigidObjects) {
         if (obj.mass == 0.0f) continue;
 
         obj.velocity += obj.acceleration * deltaTime;
         obj.velocity.y -= gravity * deltaTime;
         obj.position += obj.velocity * deltaTime;
+    }
 
-        for (size_t j{0}; j < rigidObjects.size(); j++) {
-            if (i == j) continue;
+    for (size_t i{0}; i < rigidObjects.size(); ++i) {
+        auto& objA = rigidObjects[i];
 
-            auto &other = rigidObjects[j];
+        for (size_t j{i + 1}; j < rigidObjects.size(); j++) {
+            auto& objB = rigidObjects[j];
 
-            bool collisionX = obj.position.x + obj.scale.x / 2.0f > other.position.x - other.scale.x / 2.0f &&
-                              obj.position.x - obj.scale.x / 2.0f < other.position.x + other.scale.x / 2.0f;
+            // both static
+            if (objA.mass == 0.0f && objB.mass == 0.0f) continue;
 
-            bool collisionY = obj.position.y + obj.scale.y / 2.0f > other.position.y - other.scale.y / 2.0f &&
-                              obj.position.y - obj.scale.y / 2.0f < other.position.y + other.scale.y / 2.0f;
+            glm::vec3 halfA = objA.scale / 2.0f;
+            glm::vec3 halfB = objB.scale / 2.0f;
+            glm::vec3 dist = objA.position - objB.position;
 
-            bool collisionZ = obj.position.z + obj.scale.z / 2.0f > other.position.z - other.scale.z / 2.0f &&
-                              obj.position.z - obj.scale.z / 2.0f < other.position.z + other.scale.z / 2.0f;
+            float overlapX = (halfA.x + halfB.x) - std::abs(dist.x);
+            float overlapY = (halfA.y + halfB.y) - std::abs(dist.y);
+            float overlapZ = (halfA.z + halfB.z) - std::abs(dist.z);
 
-            if (collisionX && collisionY && collisionZ) {
-                if (obj.velocity.y < 0.0f) {
-                    obj.position.y = other.position.y + (other.scale.y / 2.0f) + (obj.scale.y / 2.0f);
-                    obj.velocity.y = 0.0f;
+            // if overlapping it is a collision
+            if (overlapX > 0 && overlapY > 0 && overlapZ > 0) {
+                // collision normal is smallest overlap
+                glm::vec3 normal(0.0f);
+                float minOverlap = std::min({overlapX, overlapY, overlapZ});
+
+                if (minOverlap == overlapX) {
+                    normal = glm::vec3(dist.x > 0 ? 1.0f : -1.0f, 0.0f, 0.0f);
+                } else if (minOverlap == overlapY) {
+                    normal = glm::vec3(0.0f, dist.y > 0 ? 1.0f : -1.0f, 0.0f);
+                } else {
+                    normal = glm::vec3(0.0f, 0.0f, dist.z > 0 ? 1.0f : -1.0f);
                 }
+
+                // inverse mass
+                float invMassA = (objA.mass > 0.0f) ? 1.0f / objA.mass : 0.0f;
+                float invMassB = (objB.mass > 0.0f) ? 1.0f / objB.mass : 0.0f;
+                float sumInvMass = invMassA + invMassB;
+
+                // correct position
+                const float percent = 0.8f; // percent per frame
+                const float slop = 0.01f; // buffer
+                glm::vec3 correction = (std::max(minOverlap - slop, 0.0f) / sumInvMass) * percent * normal;
+
+                if (objA.mass > 0.0f) objA.position += correction * invMassA;
+                if (objB.mass > 0.0f) objB.position -= correction * invMassB;
+
+
+                // Momentum between objects
+                glm::vec3 relVel = objA.velocity - objB.velocity;
+
+                // How fast moving towards eachother
+                float velAlongNorm = glm::dot(relVel, normal);
+
+                // Already moving apart
+                if (velAlongNorm > 0.0f) continue;
+
+                // Cofficient of restitution
+                // 0.0f stops, 1.0f super bouncy
+                float e = 0.5f;
+
+                float j = -(1.0 + e) * velAlongNorm;
+                j /= sumInvMass;
+
+                glm::vec3 impluse = j * normal;
+                if (objA.mass > 0.0f) objA.velocity += impluse * invMassA;
+                if (objB.mass > 0.0f) objB.velocity -= impluse * invMassB;
             }
         }
     }
