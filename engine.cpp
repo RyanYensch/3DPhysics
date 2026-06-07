@@ -107,8 +107,9 @@ void PhysicsEngine::renderObjects(const std::vector<T>& objects, glm::mat4 view)
         // Draw the cube
         glBegin(GL_QUADS);
         glColor3f(obj.colour[0], obj.colour[1], obj.colour[2]);
-        for (const auto& v : obj.verticies) {
-            glVertex3f(v.x,v.y,v.z);
+        for (size_t i{0}; i < obj.verticies.size(); ++i) {
+            glNormal3f(obj.normals[i].x, obj.normals[i].y, obj.normals[i].z);
+            glVertex3f(obj.verticies[i].x,obj.verticies[i].y,obj.verticies[i].z);
         }
         glEnd();
     }
@@ -131,12 +132,30 @@ void PhysicsEngine::render(const Camera& camera, int windowWidth, int windowHeig
 
     glMatrixMode(GL_MODELVIEW);
 
+    // Lighting
+    glLoadMatrixf(glm::value_ptr(view));
+
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+    glEnable(GL_COLOR_MATERIAL);
+    glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
+
+    // light up high and right forward
+    GLfloat lightPos[] = {10.0f, 20.0f, 10.0f, 1.0f};
+    glLightfv(GL_LIGHT0, GL_POSITION, lightPos);
+
+    // ambient light for non pitch black shadows
+    GLfloat ambientLight[] = {0.3f, 0.3f, 0.3f, 1.0f};
+    glLightfv(GL_LIGHT0, GL_AMBIENT, ambientLight);
+
     // Render each object
     renderObjects(rigidObjects, view);
     renderObjects(simpleObjects, view);
 
 
     if (isPaused) {
+        glDisable(GL_LIGHTING);
+
         glMatrixMode(GL_PROJECTION);
         glPushMatrix();
         glLoadIdentity();

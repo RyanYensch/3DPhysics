@@ -17,6 +17,9 @@ void ShapeBase::initShape(ShapeType shape, glm::vec3& scale) {
 void ShapeBase::initCuboid(glm::vec3& scale) {
     for (int axis = 0; axis < 3; axis++) {
         for (const int sign : {-1, 1}) {
+            glm::vec3 normal(0.0f);
+            normal[axis] = (float)sign;
+
             for (int i = 0; i < 4; i++) {
                 glm::vec3 vertex(0.0f);
 
@@ -28,6 +31,7 @@ void ShapeBase::initCuboid(glm::vec3& scale) {
                 vertex[(axis + 2) % 3] = ((i == 0 || i == 1) ? -1.0f : 1.0f) * scale[(axis + 2) % 3] * 0.5f;
 
                 verticies.push_back(vertex);
+                normals.push_back(normal);
             }
         }
     }

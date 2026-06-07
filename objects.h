@@ -7,7 +7,7 @@
 #include <GLFW/glfw3.h>
 #include <utility>
 
-enum class ShapeType { 
+enum class ShapeType {
     Cuboid,
     Sphere
 };
@@ -15,6 +15,7 @@ enum class ShapeType {
 class ShapeBase {
 public:
     std::vector<glm::vec3> verticies;
+    std::vector<glm::vec3> normals;
 
 protected:
     void initShape(ShapeType shape, glm::vec3& scale);
