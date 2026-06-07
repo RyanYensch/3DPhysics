@@ -114,7 +114,7 @@ void PhysicsEngine::renderObjects(const std::vector<T>& objects, glm::mat4 view)
     }
 }
 
-void PhysicsEngine::render(const Camera& camera, int windowWidth, int windowHeight) {
+void PhysicsEngine::render(const Camera& camera, int windowWidth, int windowHeight, bool isPaused) {
     // Clear the screen
     glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -134,5 +134,47 @@ void PhysicsEngine::render(const Camera& camera, int windowWidth, int windowHeig
     // Render each object
     renderObjects(rigidObjects, view);
     renderObjects(simpleObjects, view);
+
+
+    if (isPaused) {
+        glMatrixMode(GL_PROJECTION);
+        glPushMatrix();
+        glLoadIdentity();
+
+        glOrtho(0, windowWidth, windowHeight, 0, -1, 1);
+
+        glMatrixMode(GL_MODELVIEW);
+        glPushMatrix();
+        glLoadIdentity();
+
+        glDisable(GL_DEPTH_TEST);
+
+        glColor3f(1.0f, 1.0f, 1.0f);
+        float iconX = windowWidth - 50.0f;
+        float iconY = 20.0f;
+        float barWidth = 8.0f;
+        float barHeight = 35.0f;
+        float spacing = 12.0f;
+
+        glBegin(GL_QUADS);
+            // Left Vertical Bar
+            glVertex2f(iconX, iconY);
+            glVertex2f(iconX + barWidth, iconY);
+            glVertex2f(iconX + barWidth, iconY + barHeight);
+            glVertex2f(iconX, iconY + barHeight);
+
+            // Right Vertical Bar
+            glVertex2f(iconX + barWidth + spacing, iconY);
+            glVertex2f(iconX + barWidth + spacing + barWidth, iconY);
+            glVertex2f(iconX + barWidth + spacing + barWidth, iconY + barHeight);
+            glVertex2f(iconX + barWidth + spacing, iconY + barHeight);
+        glEnd();
+
+        glEnable(GL_DEPTH_TEST);
+        glMatrixMode(GL_PROJECTION);
+        glPopMatrix();
+        glMatrixMode(GL_MODELVIEW);
+        glPopMatrix();
+    }
 }
 

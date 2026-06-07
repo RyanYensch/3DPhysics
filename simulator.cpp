@@ -141,7 +141,7 @@ int main() {
         // Render the scene (objects will stay still, only the camera moves)
         int width, height;
         glfwGetFramebufferSize(window, &width, &height);
-        engine.render(camera, width, height);
+        engine.render(camera, width, height, isPaused);
 
         // Swap buffers and poll events
         glfwSwapBuffers(window);
