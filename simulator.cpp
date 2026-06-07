@@ -77,8 +77,12 @@ int main() {
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // The timing rates of the function
-    float prevTime = 0.0f;
+    float prevTime = glfwGetTime();
     float deltaTime = 0.0f;
+
+    // Pause state
+    bool isPaused = false;
+    bool pauseKeyPressed = false;
 
     // Main update loop
     while (!glfwWindowShouldClose(window)) {
@@ -86,7 +90,19 @@ int main() {
         double currTime = glfwGetTime();
         deltaTime = currTime - prevTime;
         prevTime = currTime;
-        engine.update(deltaTime);
+
+        if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) {
+            if (!pauseKeyPressed) {
+                isPaused = !isPaused;
+                pauseKeyPressed = true;
+            }
+        } else {
+            pauseKeyPressed = false;
+        }
+
+        if (!isPaused) {
+            engine.update(deltaTime);
+        }
 
         // Handle camera movement
         if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
