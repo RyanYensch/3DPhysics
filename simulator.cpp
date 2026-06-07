@@ -50,10 +50,13 @@ int main() {
 
     // Create the engine and add a rigid body (the cube)
     PhysicsEngine engine;
-    RigidBody cube = {glm::vec3(0.0f, 0.0f, -3.0f), glm::vec3(0.0f, 10.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,3.0f,2.0f), ShapeType::Cuboid, glm::vec3(1.0f, 0.0f, 1.0f), 1.0f};
-    engine.addRigidObject(cube);
+    RigidBody cubeA = {glm::vec3(-4.0f, -1.0f, -5.0f), glm::vec3(3.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,1.0f,1.0f), ShapeType::Cuboid, glm::vec3(1.0f, 0.0f, 0.0f), 1.0f};
+    engine.addRigidObject(cubeA);
 
-    RigidBody floor = {glm::vec3(0.0f, -2.0f, -3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(10.0f,1.0f,10.0f), ShapeType::Cuboid, glm::vec3(0.5f, 0.5f, 0.5f), 0.0f};
+    RigidBody cubeB = {glm::vec3(4.0f, -1.0f, -5.0f), glm::vec3(-3.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,1.0f,1.0f), ShapeType::Cuboid, glm::vec3(0.0f, 0.0f, 1.0f), 1.0f};
+    engine.addRigidObject(cubeB);
+
+    RigidBody floor = {glm::vec3(0.0f, -2.0f, -5.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(20.0f,1.0f,10.0f), ShapeType::Cuboid, glm::vec3(0.3f, 0.3f, 0.3f), 0.0f};
     engine.addRigidObject(floor);
 
     // Create Camera (Positioned initially to view the cube)
@@ -106,7 +109,7 @@ int main() {
         }
 
         if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
-            engine.addRigidObject(cube);
+            engine.addRigidObject(cubeA);
         }
 
         if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
