@@ -20,17 +20,17 @@ void PhysicsEngine::update(float deltaTime) {
 }
 
 template <typename T>
-void PhysicsEngine::renderObjects(const std::vector<T>& objects, glm::mat4 projectionView) {
+void PhysicsEngine::renderObjects(const std::vector<T>& objects, glm::mat4 view) {
     for (const auto& obj : objects) {
         // Create the model matrix to translate the object to its correct position
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, obj.position);
 
         // Combine the model, view, and projection matrices
-        glm::mat4 mvp = projectionView * model;
+        glm::mat4 modelView = view * model;
 
         // Load the model-view-projection matrix into OpenGL
-        glLoadMatrixf(glm::value_ptr(mvp));
+        glLoadMatrixf(glm::value_ptr(modelView));
 
         // Draw the cube
         glBegin(GL_QUADS);
@@ -54,11 +54,13 @@ void PhysicsEngine::render(const Camera& camera, int windowWidth, int windowHeig
     glm::mat4 projection = glm::perspective(glm::radians(camera.fov), (float)windowWidth / windowHeight, camera.nearPlane, camera.farPlane);
     glm::mat4 view = camera.getViewMatrix();
 
-    // Combine the projection and view matrices
-    glm::mat4 projectionView = projection * view;
+    glMatrixMode(GL_PROJECTION);
+    glLoadMatrixf(glm::value_ptr(projection));
+
+    glMatrixMode(GL_MODELVIEW);
 
     // Render each object
-    renderObjects(rigidObjects, projectionView);
-    renderObjects(simpleObjects, projectionView);
+    renderObjects(rigidObjects, view);
+    renderObjects(simpleObjects, view);
 }
 

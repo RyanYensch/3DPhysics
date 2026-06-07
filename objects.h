@@ -36,7 +36,7 @@ public:
 
 
     RigidBody(glm::vec3 pos, glm::vec3 vel, glm::vec3 acc, glm::vec3 size, ShapeType shp, glm::vec<3, GLfloat> col, float m)
-        : position(pos), velocity(vel), acceleration(acc), mass(m), scale(size), shape(shp), colour(col) {
+        : position(pos), velocity(vel), acceleration(acc), scale(size), shape(shp), colour(col), mass(m) {
             initShape(shape, scale);
         }
 };

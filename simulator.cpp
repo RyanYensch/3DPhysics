@@ -67,6 +67,9 @@ int main() {
     // update for when screen size changes
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
+    // Hide and lock cursor
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
     // The timing rates of the function
     float prevTime = 0.0f;
     float deltaTime = 0.0f;

@@ -24,7 +24,7 @@ private:
     float gravity;
 
     template <typename T>
-    void renderObjects(const std::vector<T>& objects, glm::mat4 projectionView);
+    void renderObjects(const std::vector<T>& objects, glm::mat4 view);
 };
 
 #endif // ENGINE_H
