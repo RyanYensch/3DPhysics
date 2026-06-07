@@ -162,6 +162,22 @@ void PhysicsEngine::render(const Camera& camera, int windowWidth, int windowHeig
         std::vector<RigidBody> previewVec = { *previewObject };
         renderObjects(previewVec, view);
 
+        if (glm::length(previewObject->velocity) > 0.0f) {
+            glLoadMatrixf(glm::value_ptr(view));
+
+            glColor3f(1.0f, 1.0f, 0.0f);
+            glLineWidth(3.0f);
+
+            glBegin(GL_LINES);
+                glVertex3f(previewObject->position.x, previewObject->position.y, previewObject->position.z);
+
+                glm::vec3 end = previewObject->position + previewObject->velocity;
+                glVertex3f(end.x, end.y, end.z);
+            glEnd();
+
+            glLineWidth(1.0f);
+        }
+
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         glEnable(GL_LIGHTING);
     }
