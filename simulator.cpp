@@ -8,6 +8,9 @@
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl3.h"
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
+
 
 #define WIN_WIDTH 1080
 #define WIN_HEIGHT 720
@@ -77,7 +80,8 @@ int main() {
 
     // Create the engine and add a rigid body (the cube)
     PhysicsEngine engine;
-    RigidBody cubeA = {glm::vec3(-4.0f, -1.0f, -5.0f), glm::vec3(3.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,1.0f,1.0f), ShapeType::Cuboid, glm::vec3(1.0f, 0.0f, 0.0f), 1.0f};
+    RigidBody cubeA = {glm::vec3(-4.0f, 5.0f, -5.0f), glm::vec3(3.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,1.0f,1.0f), ShapeType::Cuboid, glm::vec3(1.0f, 0.0f, 0.0f), 1.0f};
+    cubeA.angularVelocity = glm::vec3(2.0f, 5.0f, 1.0f);
     engine.addRigidObject(cubeA);
 
     RigidBody cubeB = {glm::vec3(4.0f, -1.0f, -5.0f), glm::vec3(-3.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,1.0f,1.0f), ShapeType::Cuboid, glm::vec3(0.0f, 0.0f, 1.0f), 1.0f};

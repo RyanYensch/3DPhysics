@@ -5,6 +5,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <vector>
 #include <GLFW/glfw3.h>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 #define WIN_WIDTH 1080
 #define WIN_HEIGHT 720

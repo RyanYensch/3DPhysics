@@ -4,6 +4,9 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <algorithm>
 #include <cmath>
+#include <glm/gtc/quaternion.hpp>
+#include <glm/gtx/quaternion.hpp>
+
 
 void PhysicsEngine::addRigidObject(const RigidBody& obj) {
     rigidObjects.push_back(obj);
@@ -17,9 +20,24 @@ void PhysicsEngine::update(float deltaTime) {
     for (auto& obj : rigidObjects) {
         if (obj.mass == 0.0f) continue;
 
+        // Linear Integration
         obj.velocity += obj.acceleration * deltaTime;
         obj.velocity.y -= gravity * deltaTime;
         obj.position += obj.velocity * deltaTime;
+
+        // Angular Integration
+        obj.angularVelocity.x += (obj.torque.x / obj.localInertia.x) * deltaTime;
+        obj.angularVelocity.y += (obj.torque.y / obj.localInertia.y) * deltaTime;
+        obj.angularVelocity.z += (obj.torque.z / obj.localInertia.z) * deltaTime;
+
+        // Convert angular velocity to quaternion rate of change
+        glm::quat spin(0.0f, obj.angularVelocity.x, obj.angularVelocity.y, obj.angularVelocity.z);
+
+        // Add spin to orientation
+        obj.orientation += spin * obj.orientation * (0.5f * deltaTime);
+        obj.orientation = glm::normalize(obj.orientation);
+
+        obj.torque = glm::vec3(0.0f);
     }
 
     for (size_t i{0}; i < rigidObjects.size(); ++i) {
@@ -97,6 +115,8 @@ void PhysicsEngine::renderObjects(const std::vector<T>& objects, glm::mat4 view)
         // Create the model matrix to translate the object to its correct position
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, obj.position);
+
+        model *= glm::mat4_cast(obj.orientation);
 
         model = glm::scale(model, obj.scale);
 

@@ -1,6 +1,6 @@
 # compiler and flags
 CXX = g++
-CXXFLAGS = -Wall -g -I. -I./imgui
+CXXFLAGS = -Wall -g -I. -I./imgui -DGLM_ENABLE_EXPERIMENTAL
 LIBS = -lGL -lGLU -lglfw
 
 #source files etc
