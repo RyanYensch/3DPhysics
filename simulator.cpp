@@ -150,9 +150,22 @@ int main() {
         // Draw the UI
         if (isSummoning) {
             ImGui::Begin("Summon Object", &isSummoning, ImGuiWindowFlags_AlwaysAutoResize);
+
             ImGui::SliderFloat3("Position", glm::value_ptr(previewObject.position), -10.0f, 10.0f);
-            ImGui::SliderFloat3("Velocity", glm::value_ptr(previewObject.velocity), -5.0f, 5.0f);
+
+            glm::vec3 eulerDegrees = glm::degrees(glm::eulerAngles(previewObject.orientation));
+            if (ImGui::SliderFloat3("Orientation", glm::value_ptr(eulerDegrees), -180.0f, 180.0f)) {
+                previewObject.orientation = glm::quat(glm::radians(eulerDegrees));
+            }
             ImGui::SliderFloat3("Scale", glm::value_ptr(previewObject.scale), 0.1f, 5.0f);
+
+            ImGui::Separator();
+
+            ImGui::SliderFloat3("Linear Velocity", glm::value_ptr(previewObject.velocity), -5.0f, 5.0f);
+            ImGui::SliderFloat3("Angular Velocity", glm::value_ptr(previewObject.angularVelocity), -5.0f, 5.0f);
+
+            ImGui::Separator();
+
             ImGui::ColorEdit3("Colour", glm::value_ptr(previewObject.colour));
             ImGui::SliderFloat("Mass", &previewObject.mass, 0.0f, 50.0f);
 
