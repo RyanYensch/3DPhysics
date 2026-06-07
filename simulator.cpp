@@ -147,6 +147,7 @@ int main() {
         if (isSummoning) {
             ImGui::Begin("Summon Object", &isSummoning, ImGuiWindowFlags_AlwaysAutoResize);
             ImGui::SliderFloat3("Position", glm::value_ptr(previewObject.position), -10.0f, 10.0f);
+            ImGui::SliderFloat3("Velocity", glm::value_ptr(previewObject.velocity), -5.0f, 5.0f);
             ImGui::SliderFloat3("Scale", glm::value_ptr(previewObject.scale), 0.1f, 5.0f);
             ImGui::ColorEdit3("Colour", glm::value_ptr(previewObject.colour));
             ImGui::SliderFloat("Mass", &previewObject.mass, 0.0f, 50.0f);
