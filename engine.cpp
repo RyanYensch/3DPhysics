@@ -12,10 +12,36 @@ void PhysicsEngine::addSimpleObject(const SimpleBody& obj) {
 }
 
 void PhysicsEngine::update(float deltaTime) {
-    for (auto& obj : rigidObjects) {
+    for (size_t i{0}; i < rigidObjects.size(); ++i) {
+        auto& obj = rigidObjects[i];
+
+        if (obj.mass == 0.0f) continue;
+
         obj.velocity += obj.acceleration * deltaTime;
         obj.velocity.y -= gravity * deltaTime;
         obj.position += obj.velocity * deltaTime;
+
+        for (size_t j{0}; j < rigidObjects.size(); j++) {
+            if (i == j) continue;
+
+            auto &other = rigidObjects[j];
+
+            bool collisionX = obj.position.x + obj.scale.x / 2.0f > other.position.x - other.scale.x / 2.0f &&
+                              obj.position.x - obj.scale.x / 2.0f < other.position.x + other.scale.x / 2.0f;
+
+            bool collisionY = obj.position.y + obj.scale.y / 2.0f > other.position.y - other.scale.y / 2.0f &&
+                              obj.position.y - obj.scale.y / 2.0f < other.position.y + other.scale.y / 2.0f;
+
+            bool collisionZ = obj.position.z + obj.scale.z / 2.0f > other.position.z - other.scale.z / 2.0f &&
+                              obj.position.z - obj.scale.z / 2.0f < other.position.z + other.scale.z / 2.0f;
+
+            if (collisionX && collisionY && collisionZ) {
+                if (obj.velocity.y < 0.0f) {
+                    obj.position.y = other.position.y + (other.scale.y / 2.0f) + (obj.scale.y / 2.0f);
+                    obj.velocity.y = 0.0f;
+                }
+            }
+        }
     }
 }
 
