@@ -49,61 +49,110 @@ void PhysicsEngine::update(float deltaTime) {
             // both static
             if (objA.mass == 0.0f && objB.mass == 0.0f) continue;
 
-            glm::vec3 halfA = objA.scale / 2.0f;
-            glm::vec3 halfB = objB.scale / 2.0f;
-            glm::vec3 dist = objA.position - objB.position;
+            // Rotate resistance to spin
+            glm::mat3 rotA = glm::mat3_cast(objA.orientation);
+            glm::mat3 invInertiaLocalA = glm::mat3(0.0f);
+            if (objA.mass > 0.0f) {
+                invInertiaLocalA[0][0] = 1.0f / objA.localInertia.x;
+                invInertiaLocalA[1][1] = 1.0f / objA.localInertia.y;
+                invInertiaLocalA[2][2] = 1.0f / objA.localInertia.z;
+            }
+            glm::mat3 invInteriaWorldA = rotA * invInertiaLocalA * glm::transpose(rotA);
 
-            float overlapX = (halfA.x + halfB.x) - std::abs(dist.x);
-            float overlapY = (halfA.y + halfB.y) - std::abs(dist.y);
-            float overlapZ = (halfA.z + halfB.z) - std::abs(dist.z);
+            glm::mat3 rotB = glm::mat3_cast(objB.orientation);
+            glm::mat3 invInertiaLocalB = glm::mat3(0.0f);
+            if (objB.mass > 0.0f) {
+                invInertiaLocalB[0][0] = 1.0f / objB.localInertia.x;
+                invInertiaLocalB[1][1] = 1.0f / objB.localInertia.y;
+                invInertiaLocalB[2][2] = 1.0f / objB.localInertia.z;
+            }
+            glm::mat3 invInteriaWorldB = rotB * invInertiaLocalB * glm::transpose(rotB);
 
-            // if overlapping it is a collision
-            if (overlapX > 0 && overlapY > 0 && overlapZ > 0) {
-                // collision normal is smallest overlap
-                glm::vec3 normal(0.0f);
-                float minOverlap = std::min({overlapX, overlapY, overlapZ});
 
-                if (minOverlap == overlapX) {
-                    normal = glm::vec3(dist.x > 0 ? 1.0f : -1.0f, 0.0f, 0.0f);
-                } else if (minOverlap == overlapY) {
-                    normal = glm::vec3(0.0f, dist.y > 0 ? 1.0f : -1.0f, 0.0f);
-                } else {
-                    normal = glm::vec3(0.0f, 0.0f, dist.z > 0 ? 1.0f : -1.0f);
+            // Check if any corner A is in B
+            for (const auto& localVertA : objA.verticies) {
+                // Get exact world coords of A corner
+                glm::vec3 worldVertA = objA.position + (objA.orientation * (localVertA * objA.scale));
+
+                // Transform A corner to B local
+                glm::vec3 vertInB = glm::inverse(objB.orientation) * (worldVertA - objB.position);
+
+                // Is A in B
+                glm::vec3 halfB = objB.scale / 2.0f;
+
+                if (std::abs(vertInB.x) < halfB.x &&
+                    std::abs(vertInB.y) < halfB.y &&
+                    std::abs(vertInB.z) < halfB.z) {
+
+                    // What face is overlapping
+                    float overlapX = halfB.x - std::abs(vertInB.x);
+                    float overlapY = halfB.y - std::abs(vertInB.y);
+                    float overlapZ = halfB.z - std::abs(vertInB.z);
+
+                    glm::vec3 localNorm(0.0f);
+                    float minOverlap = std::min({overlapX, overlapY, overlapZ});
+
+                    if (minOverlap == overlapX) {
+                        localNorm = glm::vec3(vertInB.x > 0 ? 1.0f : -1.0f, 0.0f, 0.0f);
+                    } else if (minOverlap == overlapY) {
+                        localNorm = glm::vec3(0.0f, vertInB.y > 0 ? 1.0f : -1.0f, 0.0f);
+                    } else {
+                        localNorm = glm::vec3(0.0f, 0.0f, vertInB.z > 0 ? 1.0f : -1.0f);
+                    }
+
+                    // Conver Back to world
+                    glm::vec3 worldNorm = objB.orientation * localNorm;
+
+                    // Calculate lever arms from center of mass to contact
+                    glm::vec3 rA = worldVertA - objA.position;
+                    glm::vec3 rB = worldVertA - objB.position;
+
+                    // Calculate exact velocity at the contact point
+                    glm::vec3 vA = objA.velocity + glm::cross(objA.angularVelocity, rA);
+                    glm::vec3 vB = objB.velocity + glm::cross(objB.angularVelocity, rB);
+                    glm::vec3 relVel = vA - vB;
+
+                    float velAlongNorm = glm::dot(relVel, worldNorm);
+                    if (velAlongNorm > 0.0f) continue; // Already bouncing apart
+
+                    // Cofficient of restitution
+                    // 0.0f stops, 1.0f super bouncy
+                    float e = 0.5f;
+
+                    // inverse mass
+                    float invMassA = (objA.mass > 0.0f) ? 1.0f / objA.mass : 0.0f;
+                    float invMassB = (objB.mass > 0.0f) ? 1.0f / objB.mass : 0.0f;
+
+                    // Calculate how muhc the rotation absorbs impact
+                    glm::vec3 angularFactA = glm::cross(invInteriaWorldA * glm::cross(rA, worldNorm), rA);
+                    glm::vec3 angularFactB = glm::cross(invInteriaWorldB * glm::cross(rB, worldNorm), rB);
+                    float angularEffect = glm::dot(angularFactA + angularFactB, worldNorm);
+
+                    // Magnitude of the push
+                    float j = -(1.0f + e) * velAlongNorm;
+                    j /= (invMassA + invMassB + angularEffect);
+
+                    glm::vec3 impulse = j * worldNorm;
+
+                    // Apply Linear
+                    if (objA.mass > 0.0f) objA.velocity += impulse * invMassA;
+                    if (objB.mass > 0.0f) objB.velocity -= impulse * invMassB;
+
+                    // Apply Angular
+                    if (objA.mass > 0.0f) objA.angularVelocity += invInteriaWorldA * glm::cross(rA, impulse);
+                    if (objB.mass > 0.0f) objB.angularVelocity -= invInteriaWorldB * glm::cross(rB, impulse);
+
+                    // Correction
+                    const float percent = 0.8f; // percent per frame
+                    const float slop = 0.01f; // buffer
+                    glm::vec3 correction = (std::max(minOverlap - slop, 0.0f) / (invMassA + invMassB)) * percent * worldNorm;
+
+                    if (objA.mass > 0.0f) objA.position += correction * invMassA;
+                    if (objB.mass > 0.0f) objB.position -= correction * invMassB;
+
+                    // Only resolve one corner per frame
+                    break;
                 }
-
-                // inverse mass
-                float invMassA = (objA.mass > 0.0f) ? 1.0f / objA.mass : 0.0f;
-                float invMassB = (objB.mass > 0.0f) ? 1.0f / objB.mass : 0.0f;
-                float sumInvMass = invMassA + invMassB;
-
-                // correct position
-                const float percent = 0.8f; // percent per frame
-                const float slop = 0.01f; // buffer
-                glm::vec3 correction = (std::max(minOverlap - slop, 0.0f) / sumInvMass) * percent * normal;
-
-                if (objA.mass > 0.0f) objA.position += correction * invMassA;
-                if (objB.mass > 0.0f) objB.position -= correction * invMassB;
-
-
-                // Momentum between objects
-                glm::vec3 relVel = objA.velocity - objB.velocity;
-
-                // How fast moving towards eachother
-                float velAlongNorm = glm::dot(relVel, normal);
-
-                // Already moving apart
-                if (velAlongNorm > 0.0f) continue;
-
-                // Cofficient of restitution
-                // 0.0f stops, 1.0f super bouncy
-                float e = 0.5f;
-
-                float j = -(1.0 + e) * velAlongNorm;
-                j /= sumInvMass;
-
-                glm::vec3 impluse = j * normal;
-                if (objA.mass > 0.0f) objA.velocity += impluse * invMassA;
-                if (objB.mass > 0.0f) objB.velocity -= impluse * invMassB;
             }
         }
     }
