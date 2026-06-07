@@ -98,6 +98,8 @@ void PhysicsEngine::renderObjects(const std::vector<T>& objects, glm::mat4 view)
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, obj.position);
 
+        model = glm::scale(model, obj.scale);
+
         // Combine the model, view, and projection matrices
         glm::mat4 modelView = view * model;
 
@@ -136,6 +138,7 @@ void PhysicsEngine::render(const Camera& camera, int windowWidth, int windowHeig
     glLoadMatrixf(glm::value_ptr(view));
 
     glEnable(GL_LIGHTING);
+    glEnable(GL_NORMALIZE);
     glEnable(GL_LIGHT0);
     glEnable(GL_COLOR_MATERIAL);
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
