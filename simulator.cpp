@@ -106,6 +106,16 @@ int main() {
             engine.addRigidObject(cube);
         }
 
+        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        }
+
+        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS) {
+            glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+            camera.firstMouse = true;
+        }
+
         // Render the scene (objects will stay still, only the camera moves)
         int width, height;
         glfwGetFramebufferSize(window, &width, &height);
