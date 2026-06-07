@@ -115,7 +115,7 @@ void PhysicsEngine::renderObjects(const std::vector<T>& objects, glm::mat4 view)
     }
 }
 
-void PhysicsEngine::render(const Camera& camera, int windowWidth, int windowHeight, bool isPaused) {
+void PhysicsEngine::render(const Camera& camera, int windowWidth, int windowHeight, bool isPaused, bool isSummoning, const RigidBody* previewObject) {
     // Clear the screen
     glClearColor(0.1f, 0.1f, 0.1f, 0.1f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -151,6 +151,17 @@ void PhysicsEngine::render(const Camera& camera, int windowWidth, int windowHeig
     // Render each object
     renderObjects(rigidObjects, view);
     renderObjects(simpleObjects, view);
+
+    if (isSummoning && previewObject != nullptr) {
+        glDisable(GL_LIGHTING);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+        std::vector<RigidBody> previewVec = { *previewObject };
+        renderObjects(previewVec, view);
+
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        glEnable(GL_LIGHTING);
+    }
 
 
     if (isPaused) {

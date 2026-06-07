@@ -16,7 +16,7 @@ public:
     void addRigidObject(const RigidBody& obj);
     void addSimpleObject(const SimpleBody& obj);
     void update(float deltaTime);
-    void render(const Camera& camera, int windowWidth, int windowHeight, bool isPaused = false);
+    void render(const Camera& camera, int windowWidth, int windowHeight, bool isPaused = false, bool isSummoning = false, const RigidBody* previewObject = nullptr);
 
 private:
     std::vector<RigidBody> rigidObjects;
